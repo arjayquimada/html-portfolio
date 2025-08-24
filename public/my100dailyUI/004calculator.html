@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simple Web Calculator</title>
+    <style>
+      body {
+        background: #f8f9fa;
+        font-family: "Montserrat", Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .calculator {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        width: 320px;
+      }
+      .calc-display {
+        width: 100%;
+        height: 48px;
+        font-size: 1.5rem;
+        text-align: right;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 8px;
+        background: #f1f3f4;
+        color: #222;
+      }
+      .calc-buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+      }
+      .calc-btn {
+        padding: 1rem;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 8px;
+        background: #e9ecef;
+        color: #222;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .calc-btn.operator {
+        background: #007bff;
+        color: #fff;
+      }
+      .calc-btn.equal {
+        background: #28a745;
+        color: #fff;
+        grid-column: span 2;
+      }
+      .calc-btn.clear {
+        background: #dc3545;
+        color: #fff;
+      }
+      .calc-btn:active {
+        background: #bdbdbd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator">
+      <input type="text" class="calc-display" id="display" value="0" readonly />
+      <div class="calc-buttons">
+        <button class="calc-btn clear" onclick="clearDisplay()">C</button>
+        <button class="calc-btn" onclick="appendValue('(')">(</button>
+        <button class="calc-btn" onclick="appendValue(')')">)</button>
+        <button class="calc-btn operator" onclick="appendValue('/')">
+          &divide;
+        </button>
+        <button class="calc-btn" onclick="appendValue('7')">7</button>
+        <button class="calc-btn" onclick="appendValue('8')">8</button>
+        <button class="calc-btn" onclick="appendValue('9')">9</button>
+        <button class="calc-btn operator" onclick="appendValue('*')">
+          &times;
+        </button>
+        <button class="calc-btn" onclick="appendValue('4')">4</button>
+        <button class="calc-btn" onclick="appendValue('5')">5</button>
+        <button class="calc-btn" onclick="appendValue('6')">6</button>
+        <button class="calc-btn operator" onclick="appendValue('-')">
+          &minus;
+        </button>
+        <button class="calc-btn" onclick="appendValue('1')">1</button>
+        <button class="calc-btn" onclick="appendValue('2')">2</button>
+        <button class="calc-btn" onclick="appendValue('3')">3</button>
+        <button class="calc-btn operator" onclick="appendValue('+')">+</button>
+        <button class="calc-btn" onclick="appendValue('0')">0</button>
+        <button class="calc-btn" onclick="appendValue('.')">.</button>
+        <button class="calc-btn equal" onclick="calculateResult()">=</button>
+      </div>
+    </div>
+    <script>
+      let display = document.getElementById("display");
+      let current = "";
+
+      function appendValue(val) {
+        if (display.value === "0" && val !== ".") {
+          current = "";
+        }
+        current += val;
+        display.value = current;
+      }
+
+      function clearDisplay() {
+        current = "";
+        display.value = "0";
+      }
+
+      function calculateResult() {
+        try {
+          // Evaluate the expression safely
+          let result = eval(current);
+          display.value = result;
+          current = result.toString();
+        } catch {
+          display.value = "Error";
+          current = "";
+        }
+      }
+    </script>
+  </body>
+</html>
