@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Web Music Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: #f8f9fa;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Montserrat", Arial, sans-serif;
+      }
+      .music-player {
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem 2rem 2rem 2rem;
+        max-width: 350px;
+        width: 100%;
+        text-align: center;
+      }
+      .album-art {
+        width: 120px;
+        height: 120px;
+        border-radius: 16px;
+        object-fit: cover;
+        margin-bottom: 1.2rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      }
+      .song-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 0.2rem;
+      }
+      .artist-name {
+        color: #007bff;
+        font-size: 1rem;
+        margin-bottom: 1.2rem;
+      }
+      .progress {
+        height: 7px;
+        border-radius: 4px;
+        margin-bottom: 1.2rem;
+        position: relative;
+        background: #e9ecef;
+        cursor: pointer;
+      }
+      .progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.1s linear;
+      }
+      .progress-seek {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: translateY(-50%);
+        background: transparent;
+        appearance: none;
+        outline: none;
+        cursor: pointer;
+        z-index: 2;
+      }
+      .progress-seek::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #007bff;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+      }
+      .progress-seek::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #007bff;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+      }
+      .progress-seek::-ms-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #007bff;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+      }
+      .progress-seek::-webkit-slider-runnable-track {
+        height: 7px;
+        background: transparent;
+      }
+      .progress-seek::-ms-fill-lower,
+      .progress-seek::-ms-fill-upper {
+        background: transparent;
+      }
+      .progress-seek:focus {
+        outline: none;
+      }
+      .player-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .player-btn {
+        background: #e9ecef;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.3rem;
+        color: #007bff;
+        transition: background 0.15s;
+        cursor: pointer;
+      }
+      .player-btn:active,
+      .player-btn:focus {
+        background: #007bff;
+        color: #fff;
+        outline: none;
+      }
+      .player-btn.play {
+        background: #007bff;
+        color: #fff;
+        width: 56px;
+        height: 56px;
+        font-size: 1.6rem;
+      }
+      .time-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        color: #888;
+        margin-bottom: 0.5rem;
+      }
+      .volume-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        justify-content: center;
+      }
+      .volume-slider {
+        width: 90px;
+        accent-color: #007bff;
+        height: 4px;
+      }
+      .volume-icon {
+        color: #007bff;
+        font-size: 1.2rem;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+      }
+      @media (max-width: 400px) {
+        .music-player {
+          padding: 1.2rem 0.5rem;
+        }
+        .album-art {
+          width: 90px;
+          height: 90px;
+        }
+        .volume-slider {
+          width: 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="music-player shadow">
+      <img
+        class="album-art"
+        src="https://i.scdn.co/image/ab67616d0000b273e0c6e7b3e5e3e5e3e5e3e5e3"
+        alt="Album Art"
+      />
+      <div class="song-title">Dreams</div>
+      <div class="artist-name">Fleetwood Mac</div>
+      <div class="time-labels">
+        <span id="currentTime">0:00</span>
+        <span id="duration">3:45</span>
+      </div>
+      <div class="progress mb-3" id="progressContainer">
+        <div
+          class="progress-bar bg-primary"
+          id="progressBar"
+          style="width: 0%"
+        ></div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          step="0.1"
+          id="progressSeek"
+          class="progress-seek"
+          aria-label="Seek"
+        />
+      </div>
+      <div class="player-controls">
+        <button class="player-btn" id="prevBtn" title="Previous">
+          <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M11.5 3.5v9l-7-4.5 7-4.5zM4 3.5v9h1v-9H4z" />
+          </svg>
+        </button>
+        <button class="player-btn play" id="playPauseBtn" title="Play/Pause">
+          <svg
+            id="playIcon"
+            width="28"
+            height="28"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path d="M6 4.5v7l6-3.5-6-3.5z" />
+          </svg>
+          <svg
+            id="pauseIcon"
+            width="28"
+            height="28"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+            style="display: none"
+          >
+            <path d="M5.5 3.5h2v9h-2v-9zm3 0h2v9h-2v-9z" />
+          </svg>
+        </button>
+        <button class="player-btn" id="nextBtn" title="Next">
+          <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M4.5 3.5v9l7-4.5-7-4.5zM11 3.5v9h1v-9h-1z" />
+          </svg>
+        </button>
+      </div>
+      <div class="volume-controls">
+        <span
+          class="volume-icon"
+          id="muteBtn"
+          style="cursor: pointer"
+          title="Mute/Unmute"
+        >
+          <svg
+            id="volumeHigh"
+            width="22"
+            height="22"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M11.536 14.01a.75.75 0 0 1-1.06 0l-3.536-3.536H3.5A1.5 1.5 0 0 1 2 9.5v-3A1.5 1.5 0 0 1 3.5 5h3.44l3.536-3.536a.75.75 0 0 1 1.06 1.06L8.56 6.06V9.94l3.476 3.476a.75.75 0 0 1 0 1.06z"
+            />
+          </svg>
+          <svg
+            id="volumeMute"
+            width="22"
+            height="22"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+            style="display: none"
+          >
+            <path
+              d="M9.717 3.55a.75.75 0 0 1 1.06 1.06L7.56 7.94V8.06l3.217 3.217a.75.75 0 0 1-1.06 1.06L6.5 9.06V6.94l3.217-3.217z"
+            />
+          </svg>
+        </span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value="1"
+          id="volumeSlider"
+          class="volume-slider"
+        />
+      </div>
+      <audio
+        id="audio"
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+      ></audio>
+    </div>
+    <script>
+      const audio = document.getElementById("audio");
+      const playPauseBtn = document.getElementById("playPauseBtn");
+      const playIcon = document.getElementById("playIcon");
+      const pauseIcon = document.getElementById("pauseIcon");
+      const progressBar = document.getElementById("progressBar");
+      const currentTimeLabel = document.getElementById("currentTime");
+      const durationLabel = document.getElementById("duration");
+      const volumeSlider = document.getElementById("volumeSlider");
+      const muteBtn = document.getElementById("muteBtn");
+      const volumeHigh = document.getElementById("volumeHigh");
+      const volumeMute = document.getElementById("volumeMute");
+      const progressSeek = document.getElementById("progressSeek");
+
+      // Set duration when metadata is loaded
+      audio.addEventListener("loadedmetadata", () => {
+        durationLabel.textContent = formatTime(audio.duration);
+        progressSeek.max = audio.duration;
+      });
+
+      // Play/Pause toggle
+      playPauseBtn.addEventListener("click", () => {
+        if (audio.paused) {
+          audio.play();
+          playIcon.style.display = "none";
+          pauseIcon.style.display = "inline";
+        } else {
+          audio.pause();
+          playIcon.style.display = "inline";
+          pauseIcon.style.display = "none";
+        }
+      });
+
+      // Update progress bar and time
+      audio.addEventListener("timeupdate", () => {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = percent + "%";
+        currentTimeLabel.textContent = formatTime(audio.currentTime);
+        progressSeek.value = audio.currentTime;
+      });
+
+      // Seek with range input
+      progressSeek.addEventListener("input", function () {
+        audio.currentTime = this.value;
+      });
+
+      // Format time in mm:ss
+      function formatTime(sec) {
+        if (isNaN(sec)) return "0:00";
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return m + ":" + (s < 10 ? "0" : "") + s;
+      }
+
+      // Dummy prev/next (no playlist)
+      document.getElementById("prevBtn").addEventListener("click", () => {
+        audio.currentTime = 0;
+      });
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        audio.currentTime = audio.duration;
+      });
+
+      // Volume slider
+      volumeSlider.addEventListener("input", function () {
+        audio.volume = this.value;
+        if (audio.volume == 0) {
+          volumeHigh.style.display = "none";
+          volumeMute.style.display = "inline";
+        } else {
+          volumeHigh.style.display = "inline";
+          volumeMute.style.display = "none";
+        }
+      });
+
+      // Mute/Unmute button
+      muteBtn.addEventListener("click", function () {
+        if (audio.muted || audio.volume === 0) {
+          audio.muted = false;
+          audio.volume = 1;
+          volumeSlider.value = 1;
+          volumeHigh.style.display = "inline";
+          volumeMute.style.display = "none";
+        } else {
+          audio.muted = true;
+          volumeSlider.value = 0;
+          volumeHigh.style.display = "none";
+          volumeMute.style.display = "inline";
+        }
+      });
+
+      // Initialize volume icon
+      if (audio.volume == 0) {
+        volumeHigh.style.display = "none";
+        volumeMute.style.display = "inline";
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
